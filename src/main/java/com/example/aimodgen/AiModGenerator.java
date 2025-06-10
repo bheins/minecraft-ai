@@ -1,11 +1,15 @@
 package com.example.aimodgen;
 
-import com.example.aimodgen.ai.AIModService;
+import com.example.aimodgen.ai.LLMService;
+import com.example.aimodgen.ai.LLMServiceFactory;
+import com.example.aimodgen.commands.AIModCommands;
 import com.example.aimodgen.config.AIModConfig;
 import com.example.aimodgen.init.ModBlocks;
 import com.example.aimodgen.init.ModItems;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -16,9 +20,14 @@ import org.apache.logging.log4j.Logger;
 public class AiModGenerator {
     public static final String MOD_ID = "aimodgenerator";
     private static final Logger LOGGER = LogManager.getLogger();
-    private AIModService aiModService;    public AiModGenerator() {
+    private LLMService llmService;
+    private static AiModGenerator instance;
+
+    public AiModGenerator() {
+        instance = this;
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-          // Register blocks and items
+        
+        // Register blocks and items
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         
@@ -31,13 +40,25 @@ public class AiModGenerator {
 
     private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("AI Mod Generator Initializing...");
-        String apiKey = AIModConfig.OPENAI_API_KEY.get();
-        
-        if (apiKey != null && !apiKey.isEmpty()) {
-            aiModService = new AIModService(apiKey);
+        try {
+            llmService = LLMServiceFactory.createService();
             LOGGER.info("AI Service initialized successfully");
-        } else {
-            LOGGER.error("OpenAI API key not configured! Please set it in the config file.");
+        } catch (Exception e) {
+            LOGGER.error("Failed to initialize AI Service: " + e.getMessage());
         }
+    }
+
+    @SubscribeEvent
+    public void onCommandsRegister(RegisterCommandsEvent event) {
+        AIModCommands.register(event.getDispatcher());
+        LOGGER.info("AI Mod Generator commands registered");
+    }
+
+    public LLMService getLlmService() {
+        return llmService;
+    }
+
+    public static AiModGenerator getInstance() {
+        return instance;
     }
 }

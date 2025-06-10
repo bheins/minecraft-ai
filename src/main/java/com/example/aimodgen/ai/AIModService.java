@@ -4,23 +4,18 @@ import com.google.gson.JsonObject;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
-import net.minecraft.resources.ResourceLocation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AIModService {
-    private static final Logger LOGGER = LogManager.getLogger();
+public class AIModService extends LLMService {
     private final OpenAiService openAiService;
-    private static final String SYSTEM_PROMPT = "You are an AI assistant that helps generate Minecraft mod content. " +
-            "Generate content that is balanced, fun, and fits the Minecraft style.";
 
     public AIModService(String apiKey) {
         this.openAiService = new OpenAiService(apiKey);
     }
 
+    @Override
     public String generateModContent(String prompt) {
         try {
             List<ChatMessage> messages = new ArrayList<>();
