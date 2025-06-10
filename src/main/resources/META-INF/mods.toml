@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[43,)"
+license="MIT"
+
+[[mods]]
+modId="aimodgenerator"
+version="1.0.0"
+displayName="AI Mod Generator"
+authors="AI Mod Generator Team"
+description='''
+A Minecraft mod that uses AI to generate new game content!
+'''
+
+[[dependencies.aimodgenerator]]
+modId="forge"
+mandatory=true
+versionRange="[43,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.aimodgenerator]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.19.2,1.20)"
+ordering="NONE"
+side="BOTH"
