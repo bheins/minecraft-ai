@@ -144,16 +144,29 @@ public class AIModCommands {
                 displayName = generatedContent.getProperties().get("name").getAsString();
             }
             displayTag.putString("Name", Component.Serializer.toJson(Component.literal(displayName).withStyle(net.minecraft.ChatFormatting.YELLOW)));
-            
-            // Add lore with description and properties
+              // Add lore with description and properties
             net.minecraft.nbt.ListTag loreTag = new net.minecraft.nbt.ListTag();
             loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("AI Generated Item").withStyle(net.minecraft.ChatFormatting.GRAY, net.minecraft.ChatFormatting.ITALIC))));
             loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal(generatedContent.getDescription()).withStyle(net.minecraft.ChatFormatting.BLUE))));
             
-            // Add some properties to lore
+            // Add usage instructions based on item type
+            String usageInstructions = getUsageInstructions(generatedContent);
+            if (!usageInstructions.isEmpty()) {
+                loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("").withStyle(net.minecraft.ChatFormatting.WHITE))));
+                loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("Usage: " + usageInstructions).withStyle(net.minecraft.ChatFormatting.GOLD))));
+            }
+              // Add some properties to lore
             if (generatedContent.getProperties().has("maxDurability")) {
                 int durability = generatedContent.getProperties().get("maxDurability").getAsInt();
                 loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("Durability: " + durability).withStyle(net.minecraft.ChatFormatting.GREEN))));
+            }
+            
+            // Add cooldown information if applicable
+            if (hasCustomProperty(generatedContent, "teleportCooldown") || 
+                hasCustomProperty(generatedContent, "healCooldown") ||
+                hasCustomProperty(generatedContent, "fireCooldown") ||
+                hasCustomProperty(generatedContent, "iceCooldown")) {
+                loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("Has cooldown abilities").withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE))));
             }
             
             displayTag.put("Lore", loreTag);
@@ -177,5 +190,42 @@ public class AIModCommands {
             properties.put(matcher.group(1), matcher.group(2));
         }
         return properties;
+    }
+    
+    private static String getUsageInstructions(GeneratedContent content) {
+        String id = content.getId().toLowerCase();
+        String description = content.getDescription().toLowerCase();
+        
+        // Check for teleportation
+        if (hasCustomProperty(content, "teleportRange") || 
+            id.contains("teleport") || description.contains("teleport")) {
+            return "Right-click to teleport forward";
+        }
+        
+        // Check for healing
+        if (hasCustomProperty(content, "healAmount") || 
+            id.contains("heal") || description.contains("heal")) {
+            return "Right-click to restore health";
+        }
+        
+        // Check for fire abilities
+        if (hasCustomProperty(content, "fireRadius") || 
+            id.contains("fire") || description.contains("fire")) {
+            return "Right-click to create fire around you";
+        }
+        
+        // Check for ice/freeze abilities
+        if (hasCustomProperty(content, "freezeRadius") || 
+            id.contains("ice") || id.contains("freeze") ||
+            description.contains("freeze") || description.contains("ice")) {
+            return "Right-click to freeze water nearby";
+        }
+        
+        return "Right-click to use";
+    }
+    
+    private static boolean hasCustomProperty(GeneratedContent content, String property) {
+        return content.getProperties().has("customProperties") &&
+               content.getProperties().getAsJsonObject("customProperties").has(property);
     }
 }

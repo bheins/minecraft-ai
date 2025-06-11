@@ -2,10 +2,12 @@
 
 A Minecraft Forge mod that uses AI to generate new game content! This mod integrates with OpenAI's API or local LLMs (via LM Studio or Ollama) to dynamically generate new blocks and items with custom textures and properties based on natural language descriptions.
 
-## ✨ Current Status: **FULLY FUNCTIONAL**
+## ✨ Current Status: **FULLY FUNCTIONAL WITH WORKING ABILITIES**
 
 - ✅ **AI Integration**: Working with Ollama + llama3 model
 - ✅ **Content Generation**: Items and blocks generated from descriptions
+- ✅ **Functional Behaviors**: AI-generated items now have working abilities (teleport, heal, fire, ice)
+- ✅ **Smart Item Detection**: Automatically detects and enables abilities from AI properties
 - ✅ **Texture System**: AI-generated or fallback textures created
 - ✅ **Persistence**: Content saved/loaded across sessions
 - ✅ **Item Access**: New `/aimod give` command to access generated items
@@ -159,7 +161,12 @@ The mod provides several commands to generate and manage AI-created content:
 
 4. **Use the Item**
    - Items appear as enchanted sticks with custom NBT data
-   - Hover to see AI-generated properties and description
+   - **NEW: Right-click to activate special abilities!**
+   - Hover to see AI-generated properties and usage instructions
+   - **Teleport Wand**: Right-click to teleport forward (range and cooldown configurable)
+   - **Healing Items**: Right-click to restore health when damaged
+   - **Fire Staff**: Right-click to create fire blocks around you
+   - **Ice Wand**: Right-click to freeze nearby water into ice
    - Properties include damage, durability, special effects
 
 ### Example Session
@@ -281,6 +288,17 @@ The mod can be configured through the following files:
 - `run/config/forge-common.toml` - Forge common settings
 
 ## Recent Updates
+
+### Version 1.0.1 - June 2025
+- 🎯 **NEW: Functional Item Behaviors** - AI-generated items now have working abilities!
+  - **Teleport Wand**: Right-click to teleport forward with customizable range and cooldown
+  - **Healing Items**: Right-click to restore health with configurable heal amounts
+  - **Fire Staff**: Right-click to create fire in a radius around the player
+  - **Ice Wand**: Right-click to freeze water blocks into ice
+  - **Smart Detection**: Items automatically detect abilities from AI-generated properties
+  - **Usage Instructions**: Items now show "Right-click to teleport" etc. in tooltips
+  - **Cooldown System**: Prevents spam-clicking with NBT-based cooldown tracking
+  - **Visual/Audio Feedback**: Sound effects and particles for all abilities
 
 ### Version 1.0.0 - June 2025
 - ✅ **Fixed persistence system** - Generated content now loads correctly
