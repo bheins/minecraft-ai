@@ -7,7 +7,6 @@ import com.example.aimodgen.commands.AIModCommands;
 import com.example.aimodgen.config.AIModConfig;
 import com.example.aimodgen.generation.ContentGenerator;
 import com.example.aimodgen.generation.ContentRegistry;
-import com.example.aimodgen.item.DynamicItemRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -29,9 +28,8 @@ public class AiModGenerator {
         instance = this;
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         
-        // Register dynamic blocks and items
+        // Register dynamic blocks
         DynamicBlockRegistry.BLOCKS.register(modEventBus);
-        DynamicItemRegistry.ITEMS.register(modEventBus);
         
         modEventBus.addListener(this::setup);
         MinecraftForge.EVENT_BUS.register(this);
