@@ -1,0 +1,116 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
+    }
+}
+
+plugins {
+    id 'eclipse'
+    id 'maven-publish'
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+
+version = '1.0.0'
+group = 'com.example.aimodgen'
+archivesBaseName = 'ai-mod-generator'
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    
+    // Withsources is required for ForgeGradle to download source files
+    withSourcesJar()
+}
+
+minecraft {
+    mappings channel: 'official', version: '1.19.2'
+    
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            jvmArg '-Xmx3G'
+            jvmArg '--add-exports=java.base/sun.security.util=ALL-UNNAMED'
+            jvmArg '--add-opens=java.base/java.util.jar=ALL-UNNAMED'
+            
+            mods {
+                aimodgenerator {
+                    source sourceSets.main
+                }
+            }
+        }
+
+    server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            jvmArg '-Xmx3G'
+            jvmArg '--add-exports=java.base/sun.security.util=ALL-UNNAMED'
+            jvmArg '--add-opens=java.base/java.util.jar=ALL-UNNAMED'
+
+            mods {
+                aimodgenerator {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            jvmArg '-Xmx3G'
+            args '--mod', 'aimodgenerator', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+            mods {
+                aimodgenerator {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    maven {
+        name = "Forge"
+        url = 'https://maven.minecraftforge.net/'
+    }
+    maven {
+        name = "mojang"
+        url = 'https://libraries.minecraft.net/'
+    }
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.19.2-43.2.0'
+    
+    implementation fg.deobf('net.minecraftforge:forge:1.19.2-43.2.0')
+    implementation 'com.theokanning.openai-gpt3-java:service:0.12.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title'     : 'aimodgenerator',
+            'Specification-Vendor'    : 'aimodgeneratorarauthor',
+            'Specification-Version'   : '1',
+            'Implementation-Title'    : project.name,
+            'Implementation-Version'  : project.jar.archiveVersion,
+            'Implementation-Vendor'   : 'aimodgeneratorauthor',
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
