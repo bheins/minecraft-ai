@@ -3,6 +3,8 @@
 build/
 out/
 classes/
+bin/
+.bin/
 
 # IDE
 .idea/
@@ -14,9 +16,29 @@ classes/
 .project
 .vscode/
 
-# Minecraft
+# Minecraft Development
 run/
 *.launch
+
+# Minecraft generated content (keep in git for sharing)
+# run/run/generated_content.json - keep this for sharing generated items
+# run/src/ - keep this for sharing generated textures
+
+# Minecraft logs and temporary files
+run/logs/
+run/crash-reports/
+run/screenshots/
+run/saves/
+run/resourcepacks/
+run/mods/
+run/options.txt
+run/usercache.json
+run/usernamecache.json
+
+# Build artifacts
+*.jar
+!gradle-wrapper.jar
+!src/main/resources/**/*.jar
 
 # Python
 __pycache__/
@@ -49,9 +71,19 @@ ENV/
 logs/
 *.log.gz
 
-# Config files with sensitive information
+# Temporary and cache files
+*.tmp
+*.temp
+*.cache
+.mcassetsroot
+.mixin.out/
+
+# Config files with sensitive information (but keep defaults)
 run/config/aimodgenerator-common.toml
 
 # OS-specific
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~

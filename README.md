@@ -2,10 +2,12 @@
 
 A Minecraft Forge mod that uses AI to generate new game content! This mod integrates with OpenAI's API or local LLMs (via LM Studio or Ollama) to dynamically generate new blocks and items with custom textures and properties based on natural language descriptions.
 
-## ✨ Current Status: **FULLY FUNCTIONAL**
+## ✨ Current Status: **FULLY FUNCTIONAL WITH WORKING ABILITIES**
 
 - ✅ **AI Integration**: Working with Ollama + llama3 model
 - ✅ **Content Generation**: Items and blocks generated from descriptions
+- ✅ **Functional Behaviors**: AI-generated items now have working abilities (teleport, heal, fire, ice)
+- ✅ **Smart Item Detection**: Automatically detects and enables abilities from AI properties
 - ✅ **Texture System**: AI-generated or fallback textures created
 - ✅ **Persistence**: Content saved/loaded across sessions
 - ✅ **Item Access**: New `/aimod give` command to access generated items
@@ -31,7 +33,78 @@ A Minecraft Forge mod that uses AI to generate new game content! This mod integr
   - OpenAI API Key
   - LM Studio (running locally)
 
-## Setup Instructions
+## Installation (For Players)
+
+### Quick Start - Just Want to Play?
+
+1. **Download the Mod**
+   - Download the latest `.jar` file from the [Releases](../../releases) page
+   - Or build from source using the development instructions below
+
+2. **Install Minecraft Forge**
+   - Download [Minecraft Forge 43.2.0](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.19.2.html) for Minecraft 1.19.2
+   - Run the installer and select "Install client"
+   - Launch Minecraft and make sure the Forge profile appears
+
+3. **Install the Mod**
+   - Place the downloaded `aimodgenerator-1.0.1.jar` file in your Minecraft `mods` folder:
+     - **Windows**: `%APPDATA%\.minecraft\mods\`
+     - **Mac**: `~/Library/Application Support/minecraft/mods/`
+     - **Linux**: `~/.minecraft/mods/`
+   - Create the `mods` folder if it doesn't exist
+
+4. **Setup AI Service**
+   - **Option 1 - Ollama (Recommended):**
+     - Install [Ollama](https://ollama.ai/) on your computer
+     - Open command prompt/terminal and run: `ollama pull llama3`
+     - Ollama will automatically start running on port 11434
+   
+   - **Option 2 - OpenAI API:**
+     - Get an API key from [OpenAI](https://platform.openai.com/)
+     - You'll configure this in-game (see step 6)
+
+5. **Launch Minecraft**
+   - Start Minecraft with the Forge profile
+   - Create a new world or load an existing one
+   - The mod will create default config files on first run
+
+6. **Configure the Mod**
+   - Navigate to your Minecraft folder and edit: `.minecraft/config/aimodgenerator-common.toml`
+   
+   **For Ollama (if you installed it):**
+   ```toml
+   ["AI Mod Generator Configuration"]
+      llm_type = "ollama"
+      local_llm_url = "http://localhost:11434"
+      local_llm_model = "llama3"
+   ```
+   
+   **For OpenAI:**
+   ```toml
+   ["AI Mod Generator Configuration"]
+      llm_type = "openai"
+      openai_api_key = "your-api-key-here"
+   ```
+
+7. **Start Generating!**
+   - In-game, type: `/aimod generate "magic sword that heals you"`
+   - Wait 5-10 seconds for AI generation
+   - Type: `/aimod give magic_sword` to get your new item!
+   - Right-click the item to use its special abilities
+
+### System Requirements
+- **Minecraft**: 1.19.2 with Forge 43.2.0
+- **RAM**: 4GB minimum (8GB recommended for local AI)
+- **Java**: Version 17 (automatically installed with modern Minecraft)
+- **Storage**: 2-4GB free space for AI models (if using Ollama)
+
+### Troubleshooting Installation
+- **Mod doesn't appear**: Make sure you're using the Forge profile, not vanilla Minecraft
+- **Config file missing**: Launch the game once to generate default configs
+- **Ollama not working**: Run `ollama list` in terminal to verify the llama3 model is installed
+- **Permission errors**: Run Minecraft as administrator on Windows
+
+## Setup Instructions (For Developers)
 
 1. **Install Java Development Kit 17**
    - Download and install JDK 17 from [Microsoft's OpenJDK](https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-17)
@@ -159,7 +232,12 @@ The mod provides several commands to generate and manage AI-created content:
 
 4. **Use the Item**
    - Items appear as enchanted sticks with custom NBT data
-   - Hover to see AI-generated properties and description
+   - **NEW: Right-click to activate special abilities!**
+   - Hover to see AI-generated properties and usage instructions
+   - **Teleport Wand**: Right-click to teleport forward (range and cooldown configurable)
+   - **Healing Items**: Right-click to restore health when damaged
+   - **Fire Staff**: Right-click to create fire blocks around you
+   - **Ice Wand**: Right-click to freeze nearby water into ice
    - Properties include damage, durability, special effects
 
 ### Example Session
@@ -216,12 +294,72 @@ src/main/
     └── META-INF/                 # Mod metadata
 ```
 
-### Building
+### Building for Development
 ```powershell
 ./gradlew.bat clean build
 ```
 
 The built mod JAR will be in `build/libs/`.
+
+### Building a Release Version
+
+#### Quick Release Build
+```powershell
+# Clean previous builds and create release JAR
+./gradlew.bat clean build
+
+# The release JAR will be in build/libs/
+# Example: aimodgenerator-1.0.1.jar
+```
+
+#### Full Release Process
+
+1. **Update Version Number**
+   - Edit `build.gradle` and update the `version` property:
+   ```gradle
+   version = '1.0.2' // Update this version
+   ```
+
+2. **Clean Build**
+   ```powershell
+   # Remove all previous build artifacts
+   ./gradlew.bat clean
+   ```
+
+3. **Build Release JAR**
+   ```powershell
+   # Build the final release version
+   ./gradlew.bat build
+   ```
+
+4. **Test the Release**
+   ```powershell
+   # Test in development environment first
+   ./gradlew.bat runClient
+   ```
+
+5. **Locate Release Files**
+   - Main mod JAR: `build/libs/aimodgenerator-[version].jar`
+   - This is the file to distribute to users
+
+#### Release Checklist
+
+Before creating a release:
+- [ ] Test all major features (`/aimod generate`, `/aimod give`, etc.)
+- [ ] Verify AI integration works with Ollama/OpenAI
+- [ ] Test item abilities (teleport, healing, fire, ice)
+- [ ] Check persistence system (save/load across sessions)
+- [ ] Verify config file generation
+- [ ] Test on clean Minecraft installation
+- [ ] Update README with any new features
+- [ ] Update version number in `build.gradle`
+
+#### Distribution
+
+The release JAR (`aimodgenerator-[version].jar`) can be:
+- Uploaded to GitHub Releases
+- Shared directly with users
+- Submitted to mod repositories (CurseForge, Modrinth, etc.)
 
 ### Running in Development
 - Client: `./gradlew.bat runClient`
@@ -281,6 +419,17 @@ The mod can be configured through the following files:
 - `run/config/forge-common.toml` - Forge common settings
 
 ## Recent Updates
+
+### Version 1.0.1 - June 2025
+- 🎯 **NEW: Functional Item Behaviors** - AI-generated items now have working abilities!
+  - **Teleport Wand**: Right-click to teleport forward with customizable range and cooldown
+  - **Healing Items**: Right-click to restore health with configurable heal amounts
+  - **Fire Staff**: Right-click to create fire in a radius around the player
+  - **Ice Wand**: Right-click to freeze water blocks into ice
+  - **Smart Detection**: Items automatically detect abilities from AI-generated properties
+  - **Usage Instructions**: Items now show "Right-click to teleport" etc. in tooltips
+  - **Cooldown System**: Prevents spam-clicking with NBT-based cooldown tracking
+  - **Visual/Audio Feedback**: Sound effects and particles for all abilities
 
 ### Version 1.0.0 - June 2025
 - ✅ **Fixed persistence system** - Generated content now loads correctly
