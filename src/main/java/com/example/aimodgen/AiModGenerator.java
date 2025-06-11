@@ -2,10 +2,12 @@ package com.example.aimodgen;
 
 import com.example.aimodgen.ai.LLMService;
 import com.example.aimodgen.ai.LLMServiceFactory;
+import com.example.aimodgen.block.DynamicBlockRegistry;
 import com.example.aimodgen.commands.AIModCommands;
 import com.example.aimodgen.config.AIModConfig;
-import com.example.aimodgen.init.ModBlocks;
-import com.example.aimodgen.init.ModItems;
+import com.example.aimodgen.generation.ContentGenerator;
+import com.example.aimodgen.generation.ContentRegistry;
+import com.example.aimodgen.item.DynamicItemRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -27,21 +29,23 @@ public class AiModGenerator {
         instance = this;
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         
-        // Register blocks and items
-        ModBlocks.BLOCKS.register(modEventBus);
-        ModItems.ITEMS.register(modEventBus);
+        // Register dynamic blocks and items
+        DynamicBlockRegistry.BLOCKS.register(modEventBus);
+        DynamicItemRegistry.ITEMS.register(modEventBus);
         
         modEventBus.addListener(this::setup);
         MinecraftForge.EVENT_BUS.register(this);
         
-        // Register config
+        // Register config and initialize content registry
         AIModConfig.register();
+        ContentRegistry.init();
     }
 
     private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("AI Mod Generator Initializing...");
         try {
             llmService = LLMServiceFactory.createService();
+            ContentGenerator.initialize(llmService);
             LOGGER.info("AI Service initialized successfully");
         } catch (Exception e) {
             LOGGER.error("Failed to initialize AI Service: " + e.getMessage());
