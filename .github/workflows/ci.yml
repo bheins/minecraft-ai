@@ -11,8 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build Minecraft Mod
-    
-    steps:
+      steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
@@ -21,7 +20,8 @@ jobs:
       with:
         java-version: '17'
         distribution: 'microsoft'
-          - name: Cache Gradle packages
+        
+    - name: Cache Gradle packages
       uses: actions/cache@v4
       with:
         path: |
@@ -39,7 +39,8 @@ jobs:
       
     - name: Build mod with Gradle
       run: ./gradlew build --no-daemon
-        - name: Upload mod JAR
+      
+    - name: Upload mod JAR
       uses: actions/upload-artifact@v4
       with:
         name: mod-jar
