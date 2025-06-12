@@ -81,9 +81,20 @@ logs/
 # Config files with sensitive information (but keep defaults)
 run/config/aimodgenerator-common.toml
 
+# GitHub Actions
+.github/workflows/*.log
+
+# Scripts
+scripts/*.log
+
 # OS-specific
 .DS_Store
 Thumbs.db
 *.swp
 *.swo
 *~
+
+# Editor backups
+*~
+*.bak
+*.orig
