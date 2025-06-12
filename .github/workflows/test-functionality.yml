@@ -229,7 +229,6 @@ jobs:
           run/config/
           run/run/
         if-no-files-found: warn
-
   test-ai-items:
     runs-on: ubuntu-latest
     name: Test AI Item Behaviors
@@ -258,7 +257,8 @@ jobs:
           
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-        - name: Run AI item behavior tests
+      
+    - name: Run AI item behavior tests
       run: ./gradlew test --no-daemon
       
     - name: Upload test reports
