@@ -1,0 +1,136 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v1.0.1)'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'microsoft'
+        
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      
+    - name: Build with Gradle
+      run: ./gradlew build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: mod-jar
+        path: build/libs/*.jar
+        
+    - name: Upload reobfuscated jar
+      uses: actions/upload-artifact@v3
+      with:
+        name: mod-jar-reobf
+        path: build/reobfJar/output.jar
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: mod-jar
+        path: build/libs/
+        
+    - name: Download reobfuscated jar
+      uses: actions/download-artifact@v3
+      with:
+        name: mod-jar-reobf
+        path: build/reobfJar/
+        
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: AI Mod Generator v${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## AI Mod Generator v${{ steps.get_version.outputs.VERSION }}
+          
+          ### Features
+          - 🤖 AI-powered content generation with Ollama/OpenAI support
+          - 🎯 Functional item behaviors (teleport, healing, fire, ice)
+          - 🎨 Dynamic texture generation
+          - 💾 Persistent content across sessions
+          - 🔧 Smart item detection and abilities
+          
+          ### Installation
+          1. Download the mod JAR file below
+          2. Place in your `mods/` folder
+          3. Install [Ollama](https://ollama.ai/) and run `ollama pull llama3`
+          4. Start Minecraft with Forge 1.19.2-43.2.0+
+          
+          ### Quick Start
+          ```
+          /aimod generate "magical sword that teleports enemies"
+          /aimod give magical_sword
+          ```
+          
+          ### Files
+          - `ai-mod-generator-${{ steps.get_version.outputs.VERSION }}.jar` - Main mod file for users
+          - `ai-mod-generator-${{ steps.get_version.outputs.VERSION }}-sources.jar` - Source code for developers
+          
+          See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.
+        draft: false
+        prerelease: false
+        
+    - name: Upload Main Jar
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build/libs/ai-mod-generator-${{ steps.get_version.outputs.VERSION }}.jar
+        asset_name: ai-mod-generator-${{ steps.get_version.outputs.VERSION }}.jar
+        asset_content_type: application/java-archive
+        
+    - name: Upload Sources Jar
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build/libs/ai-mod-generator-${{ steps.get_version.outputs.VERSION }}-sources.jar
+        asset_name: ai-mod-generator-${{ steps.get_version.outputs.VERSION }}-sources.jar
+        asset_content_type: application/java-archive

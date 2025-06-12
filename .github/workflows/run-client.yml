@@ -1,0 +1,68 @@
+name: Run Client
+
+on:
+  workflow_dispatch:
+    inputs:
+      timeout:
+        description: 'Client timeout in minutes'
+        required: false
+        default: '10'
+        type: string
+
+jobs:
+  run-client:
+    runs-on: ubuntu-latest
+    name: Run Minecraft Client
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'microsoft'
+        
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      
+    - name: Install virtual display
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb
+        
+    - name: Build mod first
+      run: ./gradlew build --no-daemon
+      
+    - name: Run Minecraft client
+      run: |
+        export DISPLAY=:99
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        timeout ${{ github.event.inputs.timeout || '10' }}m ./gradlew runClient --no-daemon || true
+        
+    - name: Upload client logs
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: client-logs
+        path: |
+          run/logs/
+          run/crash-reports/
+        
+    - name: Upload generated content
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: generated-content
+        path: run/run/generated_content.json

@@ -1,0 +1,104 @@
+name: Run Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      timeout:
+        description: 'Server timeout in minutes'
+        required: false
+        default: '5'
+        type: string
+      test_commands:
+        description: 'Test commands to run (JSON array)'
+        required: false
+        default: '[]'
+        type: string
+
+jobs:
+  run-server:
+    runs-on: ubuntu-latest
+    name: Run Minecraft Server
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'microsoft'
+        
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      
+    - name: Build mod first
+      run: ./gradlew build --no-daemon
+      
+    - name: Accept Minecraft EULA
+      run: |
+        mkdir -p run
+        echo "eula=true" > run/eula.txt
+        
+    - name: Create server startup script
+      run: |
+        cat > run_server.sh << 'EOF'
+        #!/bin/bash
+        timeout ${{ github.event.inputs.timeout || '5' }}m ./gradlew runServer --no-daemon &
+        SERVER_PID=$!
+        
+        # Wait for server to start
+        echo "Waiting for server to start..."
+        sleep 30
+        
+        # Run test commands if provided
+        if [ "$1" != "[]" ] && [ "$1" != "" ]; then
+          echo "Running test commands: $1"
+          # Here you could send commands to the server console
+          # This would require a more complex setup with expect or similar
+        fi
+        
+        # Let server run for a bit
+        sleep 60
+        
+        # Stop server gracefully
+        kill -TERM $SERVER_PID 2>/dev/null || true
+        wait $SERVER_PID 2>/dev/null || true
+        EOF
+        chmod +x run_server.sh
+        
+    - name: Run Minecraft server
+      run: ./run_server.sh '${{ github.event.inputs.test_commands }}'
+      
+    - name: Upload server logs
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: server-logs
+        path: |
+          run/logs/
+          run/crash-reports/
+          
+    - name: Upload generated content
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: server-generated-content
+        path: run/run/generated_content.json
+        
+    - name: Upload world data
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: world-data
+        path: run/world/
