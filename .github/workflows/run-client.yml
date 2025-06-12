@@ -23,7 +23,8 @@ jobs:
       with:
         java-version: '17'
         distribution: 'microsoft'
-          - name: Cache Gradle packages
+        
+    - name: Cache Gradle packages
       uses: actions/cache@v4
       with:
         path: |
@@ -40,8 +41,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y xvfb
-        
-    - name: Build mod first
+          - name: Build mod first
       run: ./gradlew build --no-daemon
       
     - name: Run Minecraft client
@@ -49,7 +49,8 @@ jobs:
         export DISPLAY=:99
         Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         timeout ${{ github.event.inputs.timeout || '10' }}m ./gradlew runClient --no-daemon || true
-          - name: Upload client logs
+        
+    - name: Upload client logs
       uses: actions/upload-artifact@v4
       if: always()
       with:
