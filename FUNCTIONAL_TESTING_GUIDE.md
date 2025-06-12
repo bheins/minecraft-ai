@@ -14,6 +14,7 @@ The mod has been successfully built and is loading into Minecraft. The AI-genera
 - **Smart Detection**: Items automatically detect abilities from AI properties
 - **Cooldown System**: Prevents spam-clicking with proper timing
 - **Visual/Audio Feedback**: Sound effects and particles for all abilities
+- **🆕 Intelligent Item Appearance**: Items now use relevant appearances instead of just sticks!
 
 ## Testing Steps
 
@@ -69,6 +70,18 @@ The mod has been successfully built and is loading into Minecraft. The AI-genera
   1. **AI Properties**: `teleportRange`, `healAmount`, `fireRadius`, `freezeRadius`
   2. **Item ID**: Contains keywords like "teleport", "heal", "fire", "ice"
   3. **Description**: Contains relevant keywords in AI-generated description
+
+### 🆕 Item Appearance System
+- **Intelligent Selection**: Items automatically get appropriate appearances based on content
+  - **Teleport items**: Appear as Ender Pearls
+  - **Healing items**: Appear as Golden Apples
+  - **Fire items**: Appear as Fire Charges
+  - **Ice items**: Appear as Blue Ice
+  - **Swords**: Appear as Iron Swords
+  - **Wands/Staves**: Appear as Blaze Rods or Sticks
+  - **Tools**: Appear as appropriate tools (pickaxe, shovel, etc.)
+- **Smart Detection**: Uses keywords from description and AI properties
+- **Tooltip Information**: Shows why each appearance was selected
 
 ### Cooldown System
 - Teleport: 60 ticks (3 seconds) default

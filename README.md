@@ -8,6 +8,7 @@ A Minecraft Forge mod that uses AI to generate new game content! This mod integr
 - ✅ **Content Generation**: Items and blocks generated from descriptions
 - ✅ **Functional Behaviors**: AI-generated items now have working abilities (teleport, heal, fire, ice)
 - ✅ **Smart Item Detection**: Automatically detects and enables abilities from AI properties
+- ✅ **Intelligent Appearance**: Items use relevant appearances (swords, wands, tools) instead of just sticks
 - ✅ **Texture System**: AI-generated or fallback textures created
 - ✅ **Persistence**: Content saved/loaded across sessions
 - ✅ **Item Access**: New `/aimod give` command to access generated items
@@ -271,7 +272,12 @@ The mod provides several commands to generate and manage AI-created content:
 
 ### Important Notes
 
-- **Registry Limitation**: Due to Minecraft Forge restrictions, items appear as "enhanced sticks" with custom data rather than entirely new item types
+- **Smart Appearance**: Items now use appropriate appearances based on their AI-generated content:
+  - Teleport items appear as Ender Pearls
+  - Healing items appear as Golden Apples  
+  - Fire items appear as Fire Charges
+  - Ice items appear as Blue Ice
+  - Swords, wands, tools use relevant base items
 - **Persistence**: Generated content is saved to `run/run/generated_content.json`
 - **Textures**: Saved to `run/src/main/resources/assets/aimodgenerator/textures/item/`
 - **Performance**: Each generation takes ~5 seconds with Ollama + llama3
