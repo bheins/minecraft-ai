@@ -41,7 +41,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y xvfb
-          - name: Build mod first
+        
+    - name: Build mod first
       run: ./gradlew build --no-daemon
       
     - name: Run Minecraft client
