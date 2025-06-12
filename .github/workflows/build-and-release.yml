@@ -105,9 +105,9 @@ jobs:
           ls -la run/crash-reports/
           exit 1
         fi
-        
-        # Check logs for critical errors
-        if [ -f "run/logs/latest.log" ]; then        if grep -i "FATAL\|CRITICAL\|SEVERE" run/logs/latest.log; then
+          # Check logs for critical errors
+        if [ -f "run/logs/latest.log" ]; then
+          if grep -i "FATAL\|CRITICAL\|SEVERE" run/logs/latest.log; then
             echo "❌ Critical errors found in logs"
             exit 1
           fi
