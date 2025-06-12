@@ -28,9 +28,8 @@ jobs:
       with:
         java-version: '17'
         distribution: 'microsoft'
-        
-    - name: Cache Gradle packages
-      uses: actions/cache@v3
+          - name: Cache Gradle packages
+      uses: actions/cache@v4
       with:
         path: |
           ~/.gradle/caches
@@ -79,9 +78,8 @@ jobs:
         
     - name: Run Minecraft server
       run: ./run_server.sh '${{ github.event.inputs.test_commands }}'
-      
-    - name: Upload server logs
-      uses: actions/upload-artifact@v3
+        - name: Upload server logs
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: server-logs
@@ -90,14 +88,14 @@ jobs:
           run/crash-reports/
           
     - name: Upload generated content
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: server-generated-content
         path: run/run/generated_content.json
         
     - name: Upload world data
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: world-data
