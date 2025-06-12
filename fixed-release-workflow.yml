@@ -1,0 +1,77 @@
+  release:
+    needs: [comprehensive-tests, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # This permission is needed for creating releases
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: mod-jar
+        path: build/libs/
+        
+    - name: Download reobfuscated jar
+      uses: actions/download-artifact@v4
+      with:
+        name: mod-jar-reobf
+        path: build/reobfJar/
+        
+    - name: Get version from tag or input
+      id: get_version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.tag }}"
+          echo "VERSION=${VERSION#v}" >> $GITHUB_OUTPUT
+        else
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Verify available files
+      run: |
+        echo "Available files in build/libs:"
+        ls -la build/libs/
+        
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
+        name: AI Mod Generator v${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## AI Mod Generator v${{ steps.get_version.outputs.VERSION }}
+          
+          ### Features
+          - 🤖 AI-powered content generation with Ollama/OpenAI support
+          - 🎯 Functional item behaviors (teleport, healing, fire, ice)
+          - 🎨 Dynamic texture generation
+          - 💾 Persistent content across sessions
+          - 🔧 Smart item detection and abilities
+          
+          ### Installation
+          1. Download the mod JAR file below
+          2. Place in your `mods/` folder
+          3. Install [Ollama](https://ollama.ai/) and run `ollama pull llama3`
+          4. Start Minecraft with Forge 1.19.2-43.2.0+
+          
+          ### Quick Start
+          ```
+          /aimod generate "magical sword that teleports enemies"
+          /aimod give magical_sword
+          ```
+          
+          ### Files
+          - `ai-mod-generator-*.jar` - Main mod file for users
+          - `ai-mod-generator-*-sources.jar` - Source code for developers
+          
+          See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.
+        draft: false
+        prerelease: false
+        files: |
+          build/libs/ai-mod-generator*.jar
