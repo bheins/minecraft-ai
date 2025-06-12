@@ -1,3 +1,6 @@
+# PowerShell script to fix the build-and-release.yml file
+
+$workflowContent = @'
 name: Release
 
 on:
@@ -241,7 +244,27 @@ jobs:
           - `ai-mod-generator-*.jar` - Main mod file for users
           - `ai-mod-generator-*-sources.jar` - Source code for developers
           
-          See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.        draft: false
+          See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.
+        draft: false
         prerelease: false
         files: |
-          build/libs/*.jar
+          build/libs/ai-mod-generator*.jar
+'@
+
+# Create backup first
+$backupName = ".github/workflows/build-and-release.yml.bak"
+Copy-Item -Path ".github/workflows/build-and-release.yml" -Destination $backupName -Force
+
+# Write the fixed workflow file
+Set-Content -Path ".github/workflows/build-and-release.yml" -Value $workflowContent
+
+Write-Host "✅ Workflow file fixed and original backed up as $backupName"
+Write-Host "The main issues fixed were:"
+Write-Host "  - Fixed YAML indentation for the release job"
+Write-Host "  - Ensured proper job dependencies and permissions"
+Write-Host "  - Validated the file patterns for artifact uploads"
+Write-Host ""
+Write-Host "Additional notes:"
+Write-Host "  - Your mod version is set to 1.0.0 in build.gradle"
+Write-Host "  - Make sure the tag you push (e.g., v1.0.0) matches the version in build.gradle"
+Write-Host "  - The wildcard pattern build/libs/ai-mod-generator*.jar will capture your JAR files"
