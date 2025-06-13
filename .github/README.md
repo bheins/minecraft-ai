@@ -2,10 +2,6 @@
 
 This repository includes automated workflows for building and releasing the AI Mod Generator.
 
-# GitHub Actions Workflows
-
-This repository includes automated workflows for building, testing, and releasing the AI Mod Generator.
-
 ## 🔄 Workflows
 
 ### 1. **Build Mod** (`ci.yml`)

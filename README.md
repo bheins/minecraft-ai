@@ -2,14 +2,17 @@
 
 A Minecraft Forge mod that uses AI to generate new game content! This mod integrates with OpenAI's API or local LLMs (via LM Studio or Ollama) to dynamically generate new blocks and items with custom textures and properties based on natural language descriptions.
 
-## ✨ Current Status: **FULLY FUNCTIONAL WITH WORKING ABILITIES**
+## ✨ Current Status: **ENHANCED AI GENERATION WITH ADVANCED TEXTURES**
 
-- ✅ **AI Integration**: Working with Ollama + llama3 model
+- ✅ **AI Integration**: Working with Ollama + llama3 model + vision models
 - ✅ **Content Generation**: Items and blocks generated from descriptions
 - ✅ **Functional Behaviors**: AI-generated items now have working abilities (teleport, heal, fire, ice)
 - ✅ **Smart Item Detection**: Automatically detects and enables abilities from AI properties
 - ✅ **Intelligent Appearance**: Items use relevant appearances (swords, wands, tools) instead of just sticks
-- ✅ **Texture System**: AI-generated or fallback textures created
+- ✅ **Enhanced Texture System**: Multi-strategy AI texture generation with quality levels
+- ✅ **User Learning**: Personalized generation based on user preferences
+- ✅ **Style-Specific Generation**: Medieval, fantasy, futuristic, and other themed content
+- ✅ **Advanced Commands**: Enhanced command interface with quality control
 - ✅ **Persistence**: Content saved/loaded across sessions
 - ✅ **Item Access**: New `/aimod give` command to access generated items
 - ✅ **Recipe Generation**: AI creates crafting recipes
@@ -17,12 +20,22 @@ A Minecraft Forge mod that uses AI to generate new game content! This mod integr
 
 ## Features
 
+### Core Features
 - 🤖 **AI-Powered Content**: Generate items and blocks using natural language
-- 🎨 **Dynamic Textures**: AI generates custom 16x16 pixel art textures
+- 🎨 **Advanced Dynamic Textures**: Multi-strategy AI texture generation
 - 📜 **Recipe Creation**: Automatically generates balanced crafting recipes
 - 💾 **Persistence**: Generated content survives server restarts
 - 🎯 **Instant Access**: Get generated items immediately with `/aimod give`
 - 🔧 **Multiple AI Services**: OpenAI, LM Studio, or Ollama support
+
+### Enhanced Features (New!)
+- ⭐ **Smart Description Analysis**: Automatically detects item types, materials, and styles
+- 🎭 **Style-Specific Generation**: Medieval, fantasy, futuristic, realistic themes
+- 🎚️ **Quality Level Control**: 5-level quality system (1=fast, 5=maximum quality)
+- 👤 **User Learning**: Adapts to your preferences over time
+- 🖼️ **Vision Model Support**: Direct image generation with llava, bakllava models
+- 🔄 **Multi-Strategy Generation**: 4 different approaches for best results
+- ✨ **Advanced Patterns**: Sophisticated weapon, magic, and tool textures
 
 ## Requirements
 
@@ -48,7 +61,7 @@ A Minecraft Forge mod that uses AI to generate new game content! This mod integr
    - Launch Minecraft and make sure the Forge profile appears
 
 3. **Install the Mod**
-   - Place the downloaded `aimodgenerator-1.0.1.jar` file in your Minecraft `mods` folder:
+   - Place the downloaded `aimodgenerator-2.0.0.jar` file in your Minecraft `mods` folder:
      - **Windows**: `%APPDATA%\.minecraft\mods\`
      - **Mac**: `~/Library/Application Support/minecraft/mods/`
      - **Linux**: `~/.minecraft/mods/`
@@ -315,7 +328,7 @@ The built mod JAR will be in `build/libs/`.
 ./gradlew.bat clean build
 
 # The release JAR will be in build/libs/
-# Example: aimodgenerator-1.0.1.jar
+# Example: aimodgenerator-2.0.0.jar
 ```
 
 #### Full Release Process
@@ -445,6 +458,71 @@ The mod can be configured through the following files:
 - ✅ **Ollama integration** - Tested and working with llama3 model
 - ✅ **Recipe generation** - AI creates balanced crafting recipes
 
+## Testing
+
+### Running Tests
+```bash
+# Run all tests
+./gradlew test
+
+# Run enhanced feature tests
+./gradlew test --tests "com.example.aimodgen.tests.enhanced.*"
+
+# Run comprehensive test suite
+./gradlew test --tests "com.example.aimodgen.tests.ComprehensiveTestSuite"
+
+# Run smoke tests
+./gradlew test --tests "com.example.aimodgen.tests.SmokeTest"
+```
+
+### PowerShell Test Runner (New!)
+We've added a convenient PowerShell script for running different test suites:
+
+```powershell
+# Run smoke tests (fast, basic verification)
+./run-tests.ps1 smoke
+
+# Run enhanced feature tests
+./run-tests.ps1 enhanced
+
+# Run comprehensive tests (all meaningful tests)
+./run-tests.ps1 comprehensive
+
+# Run all tests
+./run-tests.ps1 all
+```
+
+### Custom Gradle Test Tasks
+You can also run these tests directly with Gradle:
+
+```bash
+# Run only smoke tests
+./gradlew runSmokeTests
+
+# Run only enhanced feature tests
+./gradlew runEnhancedTests
+
+# Run comprehensive tests
+./gradlew runComprehensiveTests
+```
+
+### Test Documentation
+- **[Enhanced Testing Guide](ENHANCED_TESTING_GUIDE.md)** - Comprehensive testing documentation for enhanced AI features
+- **[Release Notes](RELEASE_NOTES.md)** - Detailed changelog and new feature documentation
+- **[Enhanced AI Guide](ENHANCED_AI_GUIDE.md)** - Complete guide for new advanced AI capabilities
+
+## Documentation
+
+### User Guides
+- **[Quick Reference](QUICK_REFERENCE.md)** - Command reference and quick tips
+- **[Enhanced AI Guide](ENHANCED_AI_GUIDE.md)** - Advanced AI features and usage
+- **[LM Studio Setup](LMSTUDIO_SETUP.md)** - Local LLM setup instructions
+
+### Developer Documentation
+- **[Enhanced Testing Guide](ENHANCED_TESTING_GUIDE.md)** - Testing framework and guidelines
+- **[Functional Testing Guide](FUNCTIONAL_TESTING_GUIDE.md)** - End-to-end testing procedures
+- **[Release Notes](RELEASE_NOTES.md)** - Version history and migration guides
+
 ## Contributing
 
 1. Fork the repository
@@ -452,6 +530,12 @@ The mod can be configured through the following files:
 3. Commit your changes
 4. Push to the branch
 5. Create a Pull Request
+
+### Development Guidelines
+- Follow the existing code style and patterns
+- Add tests for new features using the enhanced testing framework
+- Update documentation for user-facing changes
+- Test with both local LLM and OpenAI configurations
 
 ## License
 

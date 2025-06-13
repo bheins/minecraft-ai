@@ -17,7 +17,7 @@ plugins {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-version = '1.0.0'
+version = '2.0.0'
 group = 'com.example.aimodgen'
 archivesBaseName = 'ai-mod-generator'
 
@@ -128,12 +128,36 @@ test {
     }
 }
 
+// Define custom test tasks
+task runSmokeTests(type: JavaExec) {
+    description 'Run smoke tests only'
+    group 'verification'
+    
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.example.aimodgen.tests.SmokeTest'
+}
+
+task runEnhancedTests(type: JavaExec) {
+    description 'Run enhanced feature tests only'
+    group 'verification'
+    
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.example.aimodgen.tests.enhanced.EnhancedTestSuite'
+}
+
+task runComprehensiveTests(type: JavaExec) {
+    description 'Run all comprehensive tests'
+    group 'verification'
+    
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.example.aimodgen.tests.ComprehensiveTestSuite'
+}
+
 jar {
     manifest {
         attributes([
             'Specification-Title'     : 'aimodgenerator',
-            'Specification-Vendor'    : 'aimodgeneratorarauthor',
-            'Specification-Version'   : '1',
+            'Specification-Vendor'    : 'aimodgeneratorarauthor',            'Specification-Version'   : '2',
             'Implementation-Title'    : project.name,
             'Implementation-Version'  : project.jar.archiveVersion,
             'Implementation-Vendor'   : 'aimodgeneratorauthor',

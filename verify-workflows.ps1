@@ -104,7 +104,7 @@ else {
 }
 
 Write-Host "`nRelease Workflow Tips:" -ForegroundColor Cyan
-Write-Host "  1. To trigger the release workflow, push a tag matching 'v*' (e.g., v1.0.0)"
+Write-Host "  1. To trigger the release workflow, push a tag matching 'v*' (e.g., v2.0.0)"
 Write-Host "  2. Or use the workflow_dispatch trigger with a tag parameter"
 Write-Host "  3. Make sure the version in build.gradle matches your release tag"
 Write-Host "  4. Current version in build.gradle: $(Get-Content build.gradle | Select-String -Pattern 'version\s*=\s*')"
