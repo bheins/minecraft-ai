@@ -8,6 +8,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -127,15 +128,16 @@ public class AIModCommands {
                 source.sendFailure(Component.literal("Only players can receive items."));
                 return 0;
             }
-            
-            // Create a base item (stick for now) with custom NBT
-            net.minecraft.world.item.ItemStack itemStack = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STICK);
+              // Create a base item using intelligent selection based on AI content
+            Item baseItem = com.example.aimodgen.util.ItemAppearanceManager.selectBaseItem(generatedContent);
+            net.minecraft.world.item.ItemStack itemStack = new net.minecraft.world.item.ItemStack(baseItem);
             
             // Add custom NBT data
             net.minecraft.nbt.CompoundTag nbtTag = itemStack.getOrCreateTag();
             nbtTag.putString("aimod_id", generatedContent.getId());
             nbtTag.putString("aimod_description", generatedContent.getDescription());
             nbtTag.putString("aimod_type", "generated_item");
+            nbtTag.putString("aimod_base_reason", com.example.aimodgen.util.ItemAppearanceManager.getSelectionReason(generatedContent));
             
             // Set custom display name and lore
             net.minecraft.nbt.CompoundTag displayTag = new net.minecraft.nbt.CompoundTag();
@@ -160,13 +162,19 @@ public class AIModCommands {
                 int durability = generatedContent.getProperties().get("maxDurability").getAsInt();
                 loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("Durability: " + durability).withStyle(net.minecraft.ChatFormatting.GREEN))));
             }
-            
-            // Add cooldown information if applicable
+              // Add cooldown information if applicable
             if (hasCustomProperty(generatedContent, "teleportCooldown") || 
                 hasCustomProperty(generatedContent, "healCooldown") ||
                 hasCustomProperty(generatedContent, "fireCooldown") ||
                 hasCustomProperty(generatedContent, "iceCooldown")) {
                 loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("Has cooldown abilities").withStyle(net.minecraft.ChatFormatting.LIGHT_PURPLE))));
+            }
+            
+            // Add base item selection reason
+            String selectionReason = nbtTag.getString("aimod_base_reason");
+            if (!selectionReason.isEmpty()) {
+                loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("").withStyle(net.minecraft.ChatFormatting.WHITE))));
+                loreTag.add(net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(Component.literal("Appearance: " + selectionReason).withStyle(net.minecraft.ChatFormatting.GRAY, net.minecraft.ChatFormatting.ITALIC))));
             }
             
             displayTag.put("Lore", loreTag);

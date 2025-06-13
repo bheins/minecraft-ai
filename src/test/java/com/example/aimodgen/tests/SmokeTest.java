@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Tag;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Basic smoke tests to verify mod is loading correctly
+ * Basic smoke tests to verify mod is loading correctly.
+ * These tests do minimal validation of critical components.
  */
 @Tag("smoke")
 public class SmokeTest {
