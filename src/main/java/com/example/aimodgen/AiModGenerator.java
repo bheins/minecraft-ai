@@ -4,6 +4,7 @@ import com.example.aimodgen.ai.LLMService;
 import com.example.aimodgen.ai.LLMServiceFactory;
 import com.example.aimodgen.block.DynamicBlockRegistry;
 import com.example.aimodgen.commands.AIModCommands;
+import com.example.aimodgen.commands.EnhancedAICommands;
 import com.example.aimodgen.config.AIModConfig;
 import com.example.aimodgen.generation.ContentGenerator;
 import com.example.aimodgen.generation.ContentRegistry;
@@ -48,11 +49,10 @@ public class AiModGenerator {
         } catch (Exception e) {
             LOGGER.error("Failed to initialize AI Service: " + e.getMessage());
         }
-    }
-
-    @SubscribeEvent
+    }    @SubscribeEvent
     public void onCommandsRegister(RegisterCommandsEvent event) {
         AIModCommands.register(event.getDispatcher());
+        EnhancedAICommands.register(event.getDispatcher());
         LOGGER.info("AI Mod Generator commands registered");
     }
 

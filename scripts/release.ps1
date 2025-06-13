@@ -47,9 +47,11 @@ $tagMessage = @"
 Release version $Version
 
 Features:
-- AI-powered content generation
+- Advanced AI-powered content generation with multi-strategy support
+- Enhanced texture generation with style, quality and variation controls
+- User learning and preference adaptation
 - Functional item behaviors (teleport, healing, fire, ice)
-- Dynamic texture generation
+- Smart style-specific texture generation
 - Persistent content system
 - Smart item detection
 

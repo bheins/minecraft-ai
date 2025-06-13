@@ -5,14 +5,13 @@ import com.example.aimodgen.config.AIModConfig;
 public class LLMServiceFactory {
     public static LLMService createService() {
         String llmType = AIModConfig.LLM_TYPE.get();
-        
-        switch (llmType.toLowerCase()) {
+          switch (llmType.toLowerCase()) {
             case "openai":
                 String apiKey = AIModConfig.OPENAI_API_KEY.get();
                 if (apiKey == null || apiKey.isEmpty()) {
                     throw new IllegalStateException("OpenAI API key is required when using OpenAI service");
                 }
-                return new AIModService(apiKey);
+                return new OpenAIService(apiKey);
                 
             case "lmstudio":
                 String lmStudioUrl = AIModConfig.LOCAL_LLM_URL.get();
