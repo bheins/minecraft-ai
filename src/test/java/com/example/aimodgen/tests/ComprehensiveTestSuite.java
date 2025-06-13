@@ -62,4 +62,27 @@ public class ComprehensiveTestSuite {
             Class.forName("com.example.aimodgen.generation.TextureGenerator");
         }, "Texture generation classes should be available");
     }
+
+    @Test
+    @Tag("texture")
+    @DisplayName("Item Image Generation Framework")
+    public void testItemImageGeneration() {
+        // Test that item image generation framework is available
+        assertDoesNotThrow(() -> {
+            // Verify image generation test classes exist
+            Class.forName("com.example.aimodgen.tests.ItemImageGenerationTest");
+            Class.forName("com.example.aimodgen.tests.AITextureIntegrationTest");
+        }, "Item image generation test framework should be available");
+    }
+
+    @Test
+    @Tag("texture")
+    @DisplayName("AI Texture Integration")
+    public void testAITextureIntegration() {
+        // Test AI texture integration components
+        assertDoesNotThrow(() -> {
+            Class.forName("com.example.aimodgen.ai.LLMService");
+            Class.forName("com.example.aimodgen.generation.AdvancedTextureGenerator");
+        }, "AI texture integration should be available");
+    }
 }
