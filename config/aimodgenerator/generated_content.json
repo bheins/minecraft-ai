@@ -1,0 +1,12 @@
+{
+  "test_wand": {
+    "type": "ITEM",
+    "id": "test_wand",
+    "description": "Test Wand",
+    "properties": {
+      "healAmount": 5,
+      "cooldown": 100
+    },
+    "textureData": []
+  }
+}
