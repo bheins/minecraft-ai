@@ -60,20 +60,49 @@ public class DynamicBlockRegistry {
 
     public static Map<String, RegistryObject<Block>> getRegisteredBlocks() {
         return registeredBlocks;
-    }
-
-    public static Block createAndRegisterBlock(String blockId, JsonObject properties) {
-        // Create GeneratedContent object
-        GeneratedContent content = new GeneratedContent(
-            com.example.aimodgen.generation.ContentType.BLOCK,
-            blockId,
-            properties.has("name") ? properties.get("name").getAsString() : blockId,
-            properties,
-            new byte[0] // Texture data handled separately
-        );
-        
-        // Register the block
-        RegistryObject<Block> blockReg = registerBlock(content);
-        return blockReg.get();
+    }    public static Block createAndRegisterBlock(String blockId, JsonObject properties) {
+        try {
+            // Strip namespace if needed for registration
+            String registryName = blockId;
+            if (registryName.contains(":")) {
+                registryName = registryName.substring(registryName.indexOf(':') + 1);
+            }
+            
+            // Create GeneratedContent object
+            GeneratedContent content = new GeneratedContent(
+                com.example.aimodgen.generation.ContentType.BLOCK,
+                blockId,
+                properties.has("name") ? properties.get("name").getAsString() : blockId,
+                properties,
+                new byte[0] // Texture data handled separately
+            );
+            
+            // Check if we can register at this time by attempting registration
+            try {
+                // Try to register the block
+                RegistryObject<Block> blockReg = registerBlock(content);
+                return blockReg.get();
+            } catch (Exception regEx) {
+                if (regEx.getMessage() != null && regEx.getMessage().contains("after RegisterEvent has been fired")) {
+                    // Registration is closed, save for next startup
+                    org.apache.logging.log4j.LogManager.getLogger().info(
+                        "Registration is closed. Block {} will be available after restart.", blockId);
+                    
+                    // Store in persistence for next startup
+                    com.example.aimodgen.persistence.ContentPersistence.addPendingContent(content);
+                    
+                    // Return a temporary block that won't be registered
+                    BlockBehaviour.Properties props = createBlockProperties(properties);
+                    return new AIGeneratedBlock(props, content);
+                } else {
+                    // Some other registration error
+                    throw regEx;
+                }
+            }
+        } catch (Exception e) {
+            org.apache.logging.log4j.LogManager.getLogger().error(
+                "Failed to create block {}: {}", blockId, e.getMessage());
+            throw e;
+        }
     }
 }

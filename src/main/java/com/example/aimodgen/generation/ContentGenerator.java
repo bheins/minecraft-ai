@@ -299,14 +299,18 @@ public class ContentGenerator {
             LOGGER.error("Failed to create item: " + e.getMessage());
             return null;
         }
-    }
-
-    private void saveTexture(String id, byte[] textureData, String type) {
+    }    private void saveTexture(String id, byte[] textureData, String type) {
         try {
             java.nio.file.Path textureDir = java.nio.file.Paths.get("src/main/resources/assets/aimodgenerator/textures/" + type);
             java.nio.file.Files.createDirectories(textureDir);
             
-            java.nio.file.Path texturePath = textureDir.resolve(id + ".png");
+            // Strip namespace from id if it exists (e.g., "mymod:block_name" -> "block_name")
+            String safeId = id;
+            if (safeId.contains(":")) {
+                safeId = safeId.substring(safeId.indexOf(':') + 1);
+            }
+            
+            java.nio.file.Path texturePath = textureDir.resolve(safeId + ".png");
             java.nio.file.Files.write(texturePath, textureData);
             
             LOGGER.info("Saved texture for {} at {}", id, texturePath);

@@ -7,6 +7,7 @@ import com.example.aimodgen.commands.AIModCommands;
 import com.example.aimodgen.config.AIModConfig;
 import com.example.aimodgen.generation.ContentGenerator;
 import com.example.aimodgen.generation.ContentRegistry;
+import com.example.aimodgen.generation.GeneratedContent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -16,6 +17,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Map;
 
 @Mod(AiModGenerator.MOD_ID)
 public class AiModGenerator {
@@ -37,14 +40,26 @@ public class AiModGenerator {
         // Register config and initialize content registry
         AIModConfig.register();
         ContentRegistry.init();
-    }
-
-    private void setup(final FMLCommonSetupEvent event) {
+    }    private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("AI Mod Generator Initializing...");
         try {
+            // Initialize AI service
             llmService = LLMServiceFactory.createService();
             ContentGenerator.initialize(llmService);
             LOGGER.info("AI Service initialized successfully");
+            
+            // Load any pending content that was generated after registration closed
+            Map<String, GeneratedContent> pendingContent = 
+                com.example.aimodgen.persistence.ContentPersistence.loadPendingContent();
+            
+            if (!pendingContent.isEmpty()) {
+                LOGGER.info("Found {} pending content items to register on next restart", pendingContent.size());
+                // Add to regular content persistence for next startup
+                Map<String, GeneratedContent> currentContent = 
+                    com.example.aimodgen.persistence.ContentPersistence.loadGeneratedContent();
+                currentContent.putAll(pendingContent);
+                com.example.aimodgen.persistence.ContentPersistence.saveGeneratedContent(currentContent);
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to initialize AI Service: " + e.getMessage());
         }

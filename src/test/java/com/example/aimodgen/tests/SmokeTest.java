@@ -1,34 +1,30 @@
 package com.example.aimodgen.tests;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * Basic smoke tests to verify mod is loading correctly
  */
+@Tag("smoke")
 public class SmokeTest {
 
-    public static void main(String[] args) {
-        System.out.println("Running Smoke Tests...");
-        
-        testModLoading();
-        testBasicFunctionality();
-        
-        System.out.println("Smoke Tests completed.");
+    @Test
+    public void testModLoading() {
+        // Basic test that the mod classes can be loaded
+        assertDoesNotThrow(() -> {
+            Class.forName("com.example.aimodgen.AiModGenerator");
+        }, "Mod main class should be loadable");
     }
 
-    private static void testModLoading() {
-        try {
-            // Basic test that the mod classes can be loaded
-            System.out.println("[PASS] Mod loading test");
-        } catch (Exception e) {
-            System.err.println("[FAIL] Mod loading test failed: " + e.getMessage());
-        }
-    }
-
-    private static void testBasicFunctionality() {
-        try {
-            // Basic functionality test
-            System.out.println("[PASS] Basic functionality test");
-        } catch (Exception e) {
-            System.err.println("[FAIL] Basic functionality test failed: " + e.getMessage());
-        }
+    @Test
+    public void testBasicFunctionality() {
+        // Basic functionality test - just verify we can instantiate key classes
+        assertDoesNotThrow(() -> {
+            // Test that key classes can be referenced
+            Class.forName("com.example.aimodgen.generation.ContentGenerator");
+            Class.forName("com.example.aimodgen.generation.ContentRegistry");
+        }, "Core mod classes should be loadable");
     }
 }

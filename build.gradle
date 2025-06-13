@@ -128,6 +128,31 @@ test {
     }
 }
 
+// Custom test tasks for targeted testing
+task runSmokeTests(type: Test) {
+    useJUnitPlatform {
+        includeTags "smoke"
+    }
+    description = "Runs only smoke tests"
+    group = "verification"
+}
+
+task runContentGenerationTests(type: Test) {
+    useJUnitPlatform {
+        includeTags "contentgen"
+    }
+    description = "Runs only content generation tests"
+    group = "verification"
+}
+
+task runTextureTests(type: Test) {
+    useJUnitPlatform {
+        includeTags "texture"
+    }
+    description = "Runs only texture generation tests"
+    group = "verification"
+}
+
 jar {
     manifest {
         attributes([
